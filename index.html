@@ -1033,8 +1033,8 @@
 
         /* --- 6. ADMIN LOGIC --- */
         document.getElementById('admin-login-btn').addEventListener('click', function() {
-            const pass = prompt("Enter Admin Password (hint: admin):");
-            if(pass === 'admin') {
+            const pass = prompt("Enter Admin Password :");
+            if(pass === 'DarkKnight810') {
                 document.getElementById('admin-panel').style.display = 'block';
                 loadAdminData();
             } else { alert("Access Denied"); }
