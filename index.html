@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lijin Joseph | VR/AR & 3D Specialist</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Cropper.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --bg-color: #050507;
+            --text-main: #ffffff;
+            --text-muted: #a0a0b0;
+            --accent-primary: #00f3ff;
+            --accent-secondary: #bc13fe;
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Orbitron', sans-serif;
+            --container-width: 1200px;
+            --header-height: 80px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- BACKGROUND --- */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        /* --- UTILITIES --- */
+        .container { max-width: var(--container-width); margin: 0 auto; padding: 0 20px; position: relative; z-index: 2; }
+        .section-padding { padding: 100px 0; }
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .btn {
+            display: inline-block; padding: 12px 30px; font-family: var(--font-display);
+            font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; border-radius: 2px; cursor: pointer;
+            position: relative; z-index: 1; border: 1px solid var(--accent-primary); color: var(--accent-primary);
+            background: rgba(0, 243, 255, 0.05); transition: all 0.3s ease; text-transform: uppercase;
+        }
+        .btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 243, 255, 0.5); }
+        .btn-secondary { border-color: var(--accent-secondary); color: var(--accent-secondary); background: rgba(188, 19, 254, 0.05); }
+        .btn-secondary:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
+        .section-title { font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 1rem; text-align: center; text-transform: uppercase; }
+
+        /* --- NAVIGATION --- */
+        header {
+            position: fixed; top: 0; width: 100%; height: var(--header-height); z-index: 1000;
+            background: rgba(5, 5, 7, 0.7); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; height: 100%; }
+        .logo { font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        .logo span { color: var(--accent-primary); }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; position: relative; }
+        .nav-links a:hover { color: var(--accent-primary); text-shadow: 0 0 8px var(--accent-primary); }
+
+        /* --- HERO --- */
+        .hero { min-height: 100vh; display: flex; align-items: center; position: relative; padding-top: var(--header-height); overflow: hidden; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 50px; }
+        .hero-text { max-width: 650px; }
+        .hero h1 { font-family: var(--font-display); font-size: 4.5rem; line-height: 1; margin-bottom: 1.5rem; text-transform: uppercase; }
+        .hero p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2.5rem; max-width: 550px; }
+        .hero-buttons { display: flex; gap: 20px; }
+        .hero-image-container { display: flex; justify-content: center; align-items: center; position: relative; }
+        .profile-wrapper { position: relative; width: 350px; height: 350px; animation: float 6s ease-in-out infinite; }
+        .profile-ring { position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border: 2px dashed var(--accent-primary); border-radius: 50%; animation: spin 20s linear infinite; opacity: 0.5; z-index: 1; }
+        .profile-ring::before { content: ''; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; background: var(--accent-secondary); border-radius: 50%; box-shadow: 0 0 10px var(--accent-secondary); }
+        .profile-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid var(--accent-primary); box-shadow: 0 0 30px rgba(0, 243, 255, 0.3); position: relative; z-index: 2; transition: 0.3s; filter: grayscale(40%); }
+        .profile-wrapper:hover .profile-img { filter: grayscale(0%); transform: scale(1.02); }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-20px); } 100% { transform: translateY(0px); } }
+
+        /* --- SKILLS --- */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .skill-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 8px; text-align: center; transition: 0.3s; }
+        .skill-card:hover { transform: translateY(-5px); border-color: var(--accent-secondary); background: rgba(188, 19, 254, 0.1); }
+        .skill-icon { font-size: 2rem; margin-bottom: 15px; color: var(--accent-primary); }
+
+        /* --- PROJECTS --- */
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
+        .project-card { background: #0a0a0e; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.4s; position: relative; }
+        .project-card:hover { border-color: var(--accent-primary); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        .proj-img-wrapper { position: relative; width: 100%; height: 220px; background: #000; overflow: hidden; cursor: zoom-in; }
+        .proj-img-main { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; filter: grayscale(80%); }
+        .project-card:hover .proj-img-main { filter: grayscale(0%); transform: scale(1.05); }
+        
+        .zoom-hint {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.3s;
+        }
+        .zoom-icon { font-size: 3rem; color: #fff; opacity: 0.9; text-shadow: 0 0 10px #000; }
+        .proj-img-wrapper:hover .zoom-hint { opacity: 1; }
+
+        .project-info { padding: 25px; }
+        .project-tags { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tag { font-size: 0.7rem; background: rgba(0, 243, 255, 0.1); color: var(--accent-primary); padding: 4px 8px; border-radius: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .project-title { font-size: 1.4rem; margin-bottom: 10px; font-family: var(--font-display); }
+        .project-desc { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+
+        /* --- TIMELINE (FULL WIDTH IMAGE BANNER) --- */
+        .timeline { position: relative; max-width: 800px; margin: 0 auto; }
+        .timeline::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, var(--accent-primary), transparent); }
+        .timeline-item { margin-bottom: 50px; position: relative; width: 100%; display: flex; justify-content: center; }
+        .timeline-dot { position: absolute; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; background: #000; border: 2px solid var(--accent-secondary); border-radius: 50%; top: 0; z-index: 2; box-shadow: 0 0 10px var(--accent-secondary); }
+        
+        .timeline-content { 
+            width: 45%; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(5px); 
+            padding: 25px; 
+            border-radius: 4px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            position: relative; 
+            transition: 0.3s;
+            display: flex; 
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .timeline-content:hover { border-color: var(--accent-primary); background: rgba(255, 255, 255, 0.08); }
+
+        .timeline-item:nth-child(odd) .timeline-content { margin-right: auto; text-align: right; align-items: flex-end; }
+        .timeline-item:nth-child(even) .timeline-content { margin-left: auto; text-align: left; align-items: flex-start; }
+
+        .timeline-date { color: var(--accent-primary); font-size: 0.8rem; margin-bottom: 5px; font-weight: 700; }
+        .timeline-role { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 5px; color: #fff; }
+        .timeline-company { color: var(--text-muted); margin-bottom: 15px; display: block; }
+        
+        .timeline-img-container { 
+            position: relative; width: 120%; height: 200px; 
+            margin: -25px -25px 15px -25px; 
+            background: #000; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden; cursor: zoom-in; transition: 0.2s; flex-shrink: 0; 
+        }
+        .timeline-item:nth-child(odd) .timeline-img-container { border-radius: 4px 4px 0 0; }
+        .timeline-item:nth-child(even) .timeline-img-container { border-radius: 4px 4px 0 0; }
+
+        .timeline-img-container:hover { opacity: 0.9; }
+        .timeline-img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- CONTACT INFO CARDS --- */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .contact-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            transition: 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            background: rgba(0, 243, 255, 0.05);
+        }
+        .contact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-secondary);
+        }
+        .contact-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .contact-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+        .contact-link:hover {
+            color: var(--accent-primary);
+            text-decoration: underline;
+        }
+
+        /* --- LIGHTBOX (GALLERY) --- */
+        .lightbox {
+            display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+            align-items: center; justify-content: center; flex-direction: column;
+        }
+        .lightbox-content-wrapper {
+            position: relative; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .lightbox img {
+            max-width: 90%; max-height: 75vh; border: 1px solid #333;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+        .lightbox-close {
+            position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; cursor: pointer; z-index: 5001;
+        }
+        .lightbox-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 50px; color: rgba(255,255,255,0.5); cursor: pointer; padding: 20px;
+            user-select: none; transition: 0.2s; z-index: 5002;
+        }
+        .lightbox-nav:hover { color: #fff; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        
+        .lightbox-thumbs {
+            display: flex; gap: 10px; margin-top: 15px; padding: 10px; overflow-x: auto; max-width: 90%;
+        }
+        .lightbox-thumb {
+            width: 60px; height: 60px; object-fit: cover; border: 2px solid #333; border-radius: 4px;
+            cursor: pointer; opacity: 0.6; transition: 0.2s; flex-shrink: 0;
+        }
+        .lightbox-thumb:hover { opacity: 1; }
+        .lightbox-thumb.active { border-color: var(--accent-primary); opacity: 1; transform: scale(1.1); }
+
+        .lightbox-counter {
+            color: var(--text-muted); margin-top: 10px; font-family: var(--font-display); letter-spacing: 2px;
+        }
+
+        /* --- ADMIN PANEL --- */
+        #admin-login-btn { cursor: pointer; font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; display: inline-block; }
+        #admin-login-btn:hover { color: var(--accent-primary); }
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 2000; backdrop-filter: blur(10px); color: #fff; overflow-y: auto; }
+        .admin-container { max-width: 900px; margin: 50px auto; padding: 20px; background: #111; border: 1px solid var(--accent-primary); border-radius: 8px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .admin-tab { padding: 10px 20px; background: #222; border: 1px solid #444; cursor: pointer; color: #fff; }
+        .admin-tab.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); }
+        
+        .admin-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #333; }
+        .admin-table th, .admin-table td { text-align: left; padding: 15px; border-bottom: 1px solid #333; }
+        .admin-table th { background: #222; color: var(--accent-primary); font-family: var(--font-display); }
+        .admin-table tr:hover { background: #1a1a1a; }
+
+        .admin-input, .admin-textarea { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 10px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--accent-primary); }
+
+        .action-btn {
+            display: inline-block; cursor: pointer; padding: 8px 16px; border-radius: 4px; font-size: 0.85rem;
+            border: 1px solid; margin-right: 5px; background: #222; color: #fff; font-weight: bold; text-align: center;
+        }
+        .edit-btn { border-color: var(--accent-primary); background: rgba(0, 243, 255, 0.2); color: var(--accent-primary); }
+        .edit-btn:hover { background: var(--accent-primary); color: #000; }
+        .delete-btn { border-color: #ff4444; background: rgba(255, 68, 68, 0.2); color: #ff4444; }
+        .delete-btn:hover { background: #ff4444; color: #fff; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
+        .modal-box { background: #111; padding: 30px; border: 1px solid var(--accent-secondary); width: 90%; max-width: 700px; border-radius: 8px; max-height: 90vh; overflow-y: auto; }
+
+        /* --- ADMIN IMAGE MANAGER STYLES --- */
+        .admin-img-manager {
+            border: 1px dashed #444; background: #0a0a0a; padding: 15px; border-radius: 8px; margin-top: 10px;
+        }
+        .admin-img-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 15px;
+        }
+        .admin-img-card {
+            position: relative; aspect-ratio: 1; border: 2px solid #333; border-radius: 6px; overflow: hidden; cursor: pointer; transition: 0.2s;
+        }
+        .admin-img-card:hover { border-color: #666; }
+        .admin-img-card.active { border-color: var(--accent-primary); box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+        .admin-img-card img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.7; transition: 0.2s; }
+        .admin-img-card:hover img, .admin-img-card.active img { opacity: 1; }
+        .main-badge { position: absolute; top: 5px; left: 5px; background: var(--accent-primary); color: #000; font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 4px; display: none; z-index: 2; }
+        .admin-img-card.active .main-badge { display: block; }
+        .delete-img-btn {
+            position: absolute; top: 5px; right: 5px; background: #ff4444; color: #fff; border: none;
+            width: 20px; height: 20px; border-radius: 50%; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 12px; z-index: 2; opacity: 0.8;
+        }
+        .delete-img-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        /* --- CROPPER STYLES --- */
+        .cropper-modal-container { display: flex; flex-direction: column; gap: 20px; width: 800px; max-width: 95vw; }
+        .cropper-workspace { display: flex; gap: 20px; height: 500px; }
+        .crop-area { flex: 2; background: #222; border: 1px solid #444; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .preview-area { flex: 1; background: #050507; border: 1px solid var(--accent-primary); display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; }
+        .cropper-img { max-width: 100%; display: block; }
+        .profile-preview-wrapper { width: 200px; height: 200px; position: relative; animation: float 6s ease-in-out infinite; }
+        .profile-preview-ring { position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border: 2px dashed var(--accent-primary); border-radius: 50%; animation: spin 20s linear infinite; opacity: 0.5; z-index: 1; pointer-events: none; }
+        .profile-preview-ring::before { content: ''; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; background: var(--accent-secondary); border-radius: 50%; box-shadow: 0 0 10px var(--accent-secondary); }
+        .profile-preview-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid var(--accent-primary); box-shadow: 0 0 30px rgba(0, 243, 255, 0.3); position: relative; z-index: 2; }
+        .crop-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; text-align: center;}
+        .file-input-label { display: inline-block; padding: 10px 20px; background: #222; border: 1px solid #555; cursor: pointer; border-radius: 4px; font-size: 0.9rem; width: 100%; text-align: center; }
+        .file-input-label:hover { background: #444; border-color: var(--accent-primary); }
+
+        /* --- FOOTER --- */
+        footer { border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 40px 0; text-align: center; background: #020203; }
+        .copyright { color: var(--text-muted); font-size: 0.9rem; }
+
+        @media (max-width: 992px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+            .hero h1 { font-size: 3rem; } .hero-text { margin: 0 auto; } .hero-buttons { justify-content: center; }
+            .profile-wrapper { width: 250px; height: 250px; } .nav-links { display: none; }
+            .timeline-content { width: 80%; text-align: left !important; align-items: flex-start !important; margin-left: auto !important; margin-right: auto !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. The Creative Trailing Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Navigation -->
+    <header>
+        <div class="container nav-container">
+            <a href="#" class="logo">LIJIN<span>JOSEPH</span>_</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Work</a></li>
+                    <li><a href="#experience">Exp</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="about" class="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-text">
+                        <span style="color: var(--accent-primary); font-weight: 700; letter-spacing: 2px;">VR/AR GENERALIST</span>
+                        <h1 id="hero-title">Designing <br><span class="gradient-text">Dimension</span></h1>
+                        <p id="hero-desc">I craft immersive 3D experiences that push boundaries of web and headset technology. Bridging gap between creative vision and technical execution.</p>
+                        <div class="hero-buttons">
+                            <a href="#projects" class="btn">View Projects</a>
+                            <a href="#contact" class="btn btn-secondary">Contact Me</a>
+                        </div>
+                    </div>
+                    <div class="hero-image-container">
+                        <div class="profile-wrapper">
+                            <div class="profile-ring"></div>
+                            <img id="profile-img-tag" src="https://ui-avatars.com/api/?name=Lijin+Joseph&background=050507&color=00f3ff&size=512&font-size=0.33" alt="Lijin Joseph" class="profile-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section-padding">
+            <div class="container">
+                <h2 class="section-title">Tech <span class="gradient-text">Stack</span></h2>
+                <div class="skills-grid" id="skills-container"></div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section-padding">
+            <div class="container">
+                <h2 class="section-title">Featured <span class="gradient-text">Work</span></h2>
+                <div class="projects-grid" id="projects-container"></div>
+            </div>
+        </section>
+        
+        <!-- Experience Section -->
+        <section id="experience" class="section-padding">
+            <div class="container">
+                <h2 class="section-title">Experience <span class="gradient-text">Log</span></h2>
+                <div class="timeline" id="experience-container"></div>
+            </div>
+        </section>
+
+        <!-- Contact Section (Dynamic) -->
+        <section id="contact" class="section-padding">
+            <div class="container">
+                <h2 class="section-title">Initialize <span class="gradient-text">Contact</span></h2>
+                <div class="contact-grid" id="contact-container">
+                    <!-- Dynamic Cards will be injected here by JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="copyright">&copy; 2023 Lijin Joseph. All Systems Nominal.</p>
+            <span id="admin-login-btn">Admin Login</span>
+        </div>
+    </footer>
+
+    <!-- PUBLIC LIGHTBOX GALLERY -->
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-content-wrapper">
+            <div class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">&#10094;</div>
+            <img id="lightbox-img" src="" alt="Gallery">
+            <div class="lightbox-nav lightbox-next" onclick="changeImage(1)">&#10095;</div>
+            <div id="lightbox-counter" class="lightbox-counter"></div>
+            <div id="lightbox-thumbs" class="lightbox-thumbs"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL UI -->
+    <div id="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2>Portfolio Admin System</h2>
+                <button class="btn btn-secondary" onclick="toggleAdmin()">Close Panel</button>
+            </div>
+            
+            <div class="admin-nav">
+                <div class="admin-tab active" onclick="switchTab('projects')">Projects</div>
+                <div class="admin-tab" onclick="switchTab('experience')">Experience</div>
+                <div class="admin-tab" onclick="switchTab('skills')">Skills</div>
+                <div class="admin-tab" onclick="switchTab('settings')">Settings</div>
+            </div>
+
+            <!-- Projects Tab -->
+            <div id="tab-projects">
+                <button class="btn" onclick="openProjectModal()">+ Add New Project</button>
+                <br><br>
+                <table class="admin-table">
+                    <thead><tr><th>Title</th><th>Tags</th><th>Actions</th></tr></thead>
+                    <tbody id="admin-projects-list"></tbody>
+                </table>
+            </div>
+
+            <!-- Experience Tab -->
+            <div id="tab-experience" style="display:none;">
+                <button class="btn" onclick="openExpModal()">+ Add Experience</button>
+                <br><br>
+                <table class="admin-table">
+                    <thead><tr><th>Role</th><th>Company</th><th>Date</th><th>Actions</th></tr></thead>
+                    <tbody id="admin-experience-list"></tbody>
+                </table>
+            </div>
+
+            <!-- Skills Tab -->
+            <div id="tab-skills" style="display:none;">
+                <button class="btn" onclick="openSkillModal()">+ Add New Skill</button>
+                <br><br>
+                <table class="admin-table">
+                    <thead><tr><th>Category</th><th>Items</th><th>Actions</th></tr></thead>
+                    <tbody id="admin-skills-list"></tbody>
+                </table>
+            </div>
+
+            <!-- Settings Tab (Updated for Contact Info) -->
+            <div id="tab-settings" style="display:none;">
+                <h3>Hero Settings</h3>
+                <br>
+                <label>Hero Title:</label>
+                <input type="text" id="admin-hero-title" class="admin-input">
+                <label>Hero Description:</label>
+                <textarea id="admin-hero-desc" class="admin-input" rows="4"></textarea>
+                <label>Profile Image URL:</label>
+                <input type="text" id="admin-img-url" class="admin-input">
+                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+                    <label style="color: var(--accent-secondary);">Advanced Photo Editor:</label>
+                    <button class="btn" onclick="openProfileCropper()">Edit & Crop Profile Photo</button>
+                    <p style="font-size: 0.8rem; color: #666;">Select area, zoom, and see how it fits on the site.</p>
+                </div>
+
+                <!-- NEW CONTACT SETTINGS SECTION -->
+                <hr style="border-color:#333; margin: 30px 0;">
+                <h3 style="color:var(--accent-primary); margin-bottom:15px;">Contact Information</h3>
+                <label>Phone Number:</label>
+                <input type="text" id="admin-contact-phone" class="admin-input" placeholder="+1 (234) 567-890">
+                
+                <label>Email Address:</label>
+                <input type="text" id="admin-contact-email" class="admin-input" placeholder="hello@example.com">
+                
+                <label>Location:</label>
+                <input type="text" id="admin-contact-location" class="admin-input" placeholder="City, Country">
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label>LinkedIn URL:</label>
+                        <input type="text" id="admin-contact-linkedin" class="admin-input" placeholder="https://linkedin.com/in/...">
+                    </div>
+                    <div>
+                        <label>GitHub URL:</label>
+                        <input type="text" id="admin-contact-github" class="admin-input" placeholder="https://github.com/...">
+                    </div>
+                </div>
+                <!-- ---------------------- -->
+
+                <br><br>
+                <button class="btn" onclick="saveSettings()">Save All Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div id="modal-project" class="modal-overlay">
+        <div class="modal-box">
+            <h3 id="proj-modal-title" style="margin-bottom: 20px;">Add Project</h3>
+            <input type="hidden" id="proj-id">
+            <label>Title:</label>
+            <input type="text" id="proj-title" class="admin-input" placeholder="Project Title">
+            <label>Tags:</label>
+            <input type="text" id="proj-tags" class="admin-input" placeholder="Tags (comma separated)">
+            <label>Description:</label>
+            <textarea id="proj-desc" class="admin-input" placeholder="Description" rows="3"></textarea>
+            
+            <div class="admin-img-manager">
+                <label>Project Images:</label>
+                <p style="font-size: 0.8rem; color: #888;">Click a card to set it as the Main Photo. Use the X to delete.</p>
+                <input type="file" id="proj-files" multiple accept="image/*" class="admin-input" onchange="handleAdminFileUpload('proj-files', tempProjectImgs, 'proj-grid')">
+                <div id="proj-grid" class="admin-img-grid"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+                <button class="btn" onclick="saveProject()">Save Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXPERIENCE MODAL -->
+    <div id="modal-exp" class="modal-overlay">
+        <div class="modal-box">
+            <h3 id="exp-modal-title" style="margin-bottom: 20px;">Add Experience</h3>
+            <input type="hidden" id="exp-id">
+            <label>Date:</label>
+            <input type="text" id="exp-date" class="admin-input" placeholder="e.g. 2021 - Present">
+            <label>Role:</label>
+            <input type="text" id="exp-role" class="admin-input" placeholder="e.g. Senior XR Developer">
+            <label>Company:</label>
+            <input type="text" id="exp-company" class="admin-input" placeholder="e.g. TechVision Studio">
+            
+            <div class="admin-img-manager">
+                <label>Experience Images:</label>
+                <p style="font-size: 0.8rem; color: #888;">Click a card to set it as the Main Photo. Use the X to delete.</p>
+                <input type="file" id="exp-files" multiple accept="image/*" class="admin-input" onchange="handleAdminFileUpload('exp-files', tempExpImgs, 'exp-grid')">
+                <div id="exp-grid" class="admin-img-grid"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+                <button class="btn" onclick="saveExperience()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKILL MODAL -->
+    <div id="modal-skill" class="modal-overlay">
+        <div class="modal-box">
+            <h3 id="skill-modal-title" style="margin-bottom: 20px;">Add Skill</h3>
+            <input type="hidden" id="skill-index">
+            <label>Category Name:</label>
+            <input type="text" id="skill-name" class="admin-input" placeholder="e.g. Programming">
+            <label>Skills List:</label>
+            <input type="text" id="skill-items" class="admin-input" placeholder="e.g. C#, Python, Java">
+            <label>Emoji Icon:</label>
+            <input type="text" id="skill-icon" class="admin-input" placeholder="e.g. 💻">
+            <div style="display:flex; justify-content:space-between; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+                <button class="btn" onclick="saveSkill()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE CROPPER MODAL -->
+    <div id="modal-profile-crop" class="modal-overlay">
+        <div class="modal-box cropper-modal-container">
+            <h3 style="margin-bottom: 10px; text-align: center;">Edit Profile Photo</h3>
+            <p class="crop-hint">Scroll to Zoom • Drag to Move • Drag corners to Select Area</p>
+            
+            <div class="cropper-workspace">
+                <div class="crop-area">
+                    <img id="cropper-image" src="" alt="Crop Me">
+                </div>
+                <div class="preview-area">
+                    <div class="profile-preview-wrapper">
+                        <div class="profile-preview-ring"></div>
+                        <img id="cropper-result" class="profile-preview-img" src="" alt="Preview">
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                <label>Upload New Photo:</label>
+                <label for="cropper-file" class="file-input-label">Select Image from Computer</label>
+                <input type="file" id="cropper-file" accept="image/*" style="display:none;" onchange="handleCropperFile(this)">
+                
+                <div style="display:flex; justify-content:space-between; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closeProfileCropper()">Cancel</button>
+                    <button class="btn" onclick="saveProfileCrop()">Save Cropped Photo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cropper.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <script>
+        /* --- 1. CANVAS BACKGROUND ANIMATION --- */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        const particleCount = 60; 
+        const trailStrength = 0.15;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width; this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 1.5; this.vy = (Math.random() - 0.5) * 1.5;
+                this.size = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.5 ? 'rgba(0, 243, 255,' : 'rgba(188, 19, 254,'; 
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + '1)'; ctx.fill();
+            }
+        }
+        function initParticles() { particles = []; for (let i = 0; i < particleCount; i++) particles.push(new Particle()); }
+        function animate() {
+            ctx.fillStyle = `rgba(5, 5, 7, ${trailStrength})`; ctx.fillRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 150) {
+                        ctx.beginPath(); ctx.strokeStyle = `rgba(100, 100, 255, ${1 - distance / 150})`; 
+                        ctx.lineWidth = 0.5; ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        initParticles(); animate();
+
+        /* --- 2. DATA & CMS SYSTEM --- */
+
+        const defaultData = {
+            hero: {
+                title: "Designing <br><span class='gradient-text'>Dimension</span>",
+                desc: "I craft immersive 3D experiences that push boundaries of web and headset technology.",
+                imgUrl: "https://ui-avatars.com/api/?name=Lijin+Joseph&background=050507&color=00f3ff&size=512&font-size=0.33"
+            },
+            skills: [
+                { icon: "🎮", name: "Game Engine", items: "Unity 3D" },
+                { icon: "💻", name: "Programming", items: "C#, Python" },
+                { icon: "🌐", name: "Web Tech", items: "HTML, JavaScript, CSS" },
+                { icon: "🧊", name: "3D Art", items: "Blender" }
+            ],
+            projects: [
+                { id: 1, title: "Cyberpunk City Walk", tags: "Unity, C#", desc: "An open-world VR exploration demo featuring real-time lighting and volumetric fog.", imgs: ["https://picsum.photos/seed/vr1/800/600", "https://picsum.photos/seed/vr2/800/600", "https://picsum.photos/seed/vr3/800/600"] },
+                { id: 2, title: "Data Visualization", tags: "Python, HTML", desc: "Web-based experience visualizing complex 3D data points using Python backend.", imgs: ["https://picsum.photos/seed/ar1/800/600"] },
+                { id: 3, title: "Low Poly Environment", tags: "Blender, Unity", desc: "Full creation pipeline from Blender modeling to Unity implementation.", imgs: ["https://picsum.photos/seed/blender1/800/600", "https://picsum.photos/seed/blender2/800/600"] }
+            ],
+            experience: [
+                { id: 101, date: "2021 - Present", role: "Senior XR Developer", company: "TechVision Studio", imgs: ["https://picsum.photos/seed/tech1/600/300", "https://picsum.photos/seed/tech2/600/300"] },
+                { id: 102, date: "2019 - 2021", role: "3D Web Developer", company: "Creative Agency X", imgs: ["https://picsum.photos/seed/agency1/600/300"] },
+                { id: 103, date: "2017 - 2019", role: "Junior 3D Artist", company: "Indie Game Studio", imgs: [] }
+            ],
+            contact: {
+                phone: "+1 (234) 567-890",
+                email: "hello@lijinjoseph.com",
+                location: "San Francisco, CA",
+                linkedin: "https://linkedin.com",
+                github: "https://github.com"
+            }
+        };
+
+        function getData() {
+            const stored = localStorage.getItem('alexPortfolioData');
+            const data = stored ? JSON.parse(stored) : defaultData;
+            // Safety migration
+            if(data.experience && !data.experience[0].imgs) data.experience.forEach(exp => {
+                if(exp.img) { exp.imgs = [exp.img]; delete exp.img; }
+            });
+            if(data.projects && !data.projects[0].imgs) data.projects.forEach(proj => {
+                if(proj.img) { proj.imgs = [proj.img]; delete proj.img; }
+            });
+            // Migration for Contact (if missing from old data)
+            if(!data.contact) {
+                data.contact = defaultData.contact;
+            }
+            return data;
+        }
+        
+        function saveToStorageInternal(data) {
+            try {
+                localStorage.setItem('alexPortfolioData', JSON.stringify(data));
+            } catch (e) {
+                alert("Storage full! Try uploading smaller images or deleting some old ones.");
+            }
+        }
+
+        let appData = getData();
+        let cropper; 
+
+        let tempProjectImgs = [];
+        let tempExpImgs = [];
+
+        /* --- 3. LIGHTBOX LOGIC (PUBLIC GALLERY) --- */
+        let currentGalleryImages = [];
+        let currentGalleryIndex = 0;
+
+        function openLightbox(type, id) {
+            let item = null;
+            if(type === 'projects') {
+                item = appData.projects.find(p => p.id === id);
+            } else if (type === 'experience') {
+                item = appData.experience.find(e => e.id === id);
+            }
+
+            if (!item) return;
+            
+            let images = Array.isArray(item.imgs) ? item.imgs : [item.imgs];
+            
+            if (images.length === 0) return;
+
+            currentGalleryImages = images;
+            currentGalleryIndex = 0;
+            document.getElementById('lightbox').style.display = 'flex';
+            updateLightboxContent();
+            renderLightboxThumbs();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeImage(direction) {
+            currentGalleryIndex += direction;
+            if (currentGalleryIndex >= currentGalleryImages.length) currentGalleryIndex = 0;
+            if (currentGalleryIndex < 0) currentGalleryIndex = currentGalleryImages.length - 1;
+            updateLightboxContent();
+            updateActiveThumb();
+        }
+
+        function goToImage(index) {
+            currentGalleryIndex = index;
+            updateLightboxContent();
+            updateActiveThumb();
+        }
+
+        function updateLightboxContent() {
+            const imgEl = document.getElementById('lightbox-img');
+            const counterEl = document.getElementById('lightbox-counter');
+            
+            imgEl.src = currentGalleryImages[currentGalleryIndex];
+            counterEl.innerText = `${currentGalleryIndex + 1} / ${currentGalleryImages.length}`;
+        }
+
+        function renderLightboxThumbs() {
+            const container = document.getElementById('lightbox-thumbs');
+            container.innerHTML = '';
+            currentGalleryImages.forEach((img, idx) => {
+                const thumb = document.createElement('img');
+                thumb.src = img;
+                thumb.className = 'lightbox-thumb';
+                if(idx === 0) thumb.classList.add('active');
+                thumb.onclick = () => goToImage(idx);
+                container.appendChild(thumb);
+            });
+        }
+
+        function updateActiveThumb() {
+            const thumbs = document.querySelectorAll('.lightbox-thumb');
+            thumbs.forEach((t, i) => {
+                if(i === currentGalleryIndex) t.classList.add('active');
+                else t.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('lightbox').style.display === 'flex') {
+                if (e.key === 'ArrowRight') changeImage(1);
+                if (e.key === 'ArrowLeft') changeImage(-1);
+                if (e.key === 'Escape') closeLightbox();
+            }
+        });
+
+        /* --- 4. ADMIN IMAGE MANAGER LOGIC --- */
+        async function handleAdminFileUpload(inputId, targetArray, gridId) {
+            const input = document.getElementById(inputId);
+            if (!input.files || input.files.length === 0) return;
+            const newFiles = Array.from(input.files);
+            const base64Promises = newFiles.map(file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+            try {
+                const newBase64s = await Promise.all(base64Promises);
+                targetArray.push(...newBase64s);
+                renderAdminImageGrid(gridId, targetArray);
+                input.value = '';
+            } catch (e) {
+                console.error(e);
+                alert("Error processing images.");
+            }
+        }
+
+        function renderAdminImageGrid(gridId, imgArray) {
+            const container = document.getElementById(gridId);
+            container.innerHTML = '';
+            imgArray.forEach((imgSrc, index) => {
+                const isActive = index === 0;
+                const card = document.createElement('div');
+                card.className = `admin-img-card ${isActive ? 'active' : ''}`;
+                card.onclick = () => setMainImage(imgArray, index, gridId);
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                const badge = document.createElement('div');
+                badge.className = 'main-badge';
+                badge.innerText = 'MAIN';
+                const delBtn = document.createElement('button');
+                delBtn.className = 'delete-img-btn';
+                delBtn.innerHTML = '&times;';
+                delBtn.title = 'Delete Image';
+                delBtn.onclick = (e) => { e.stopPropagation(); deleteAdminImage(imgArray, index, gridId); };
+                card.appendChild(badge);
+                card.appendChild(img);
+                card.appendChild(delBtn);
+                container.appendChild(card);
+            });
+        }
+
+        function setMainImage(arr, index, gridId) {
+            if (index === 0) return;
+            const item = arr[index];
+            arr.splice(index, 1);
+            arr.unshift(item);
+            renderAdminImageGrid(gridId, arr);
+        }
+
+        function deleteAdminImage(arr, index, gridId) {
+            if(confirm("Delete this photo?")) {
+                arr.splice(index, 1);
+                renderAdminImageGrid(gridId, arr);
+            }
+        }
+
+        /* --- 5. CROPPER & PROFILE LOGIC --- */
+        function openProfileCropper() {
+            document.getElementById('modal-profile-crop').style.display = 'flex';
+            const currentImg = document.getElementById('profile-img-tag').src;
+            const cropperImg = document.getElementById('cropper-image');
+            cropperImg.src = currentImg;
+            initCropper(currentImg);
+        }
+
+        function initCropper(imgSrc) {
+            if (cropper) { cropper.destroy(); }
+            const image = document.getElementById('cropper-image');
+            image.src = imgSrc;
+            image.onload = function() {
+                cropper = new Cropper(image, {
+                    aspectRatio: NaN, viewMode: 1, dragMode: 'move', autoCropArea: true, restore: false,
+                    guides: true, center: true, highlight: true, cropBoxMovable: true, cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false, zoomable: true, zoomOnWheel: true, zoomOnTouch: false,
+                    ready: function (e) { updateCropPreview(); }
+                });
+                cropper.on('cropend', updateCropPreview);
+            };
+        }
+
+        function updateCropPreview() {
+            if (!cropper) return;
+            const canvas = cropper.getCroppedCanvas();
+            if (canvas) {
+                document.getElementById('cropper-result').src = canvas.toDataURL();
+            }
+        }
+
+        function handleCropperFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) { initCropper(e.target.result); };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function closeProfileCropper() {
+            document.getElementById('modal-profile-crop').style.display = 'none';
+        }
+
+        function saveProfileCrop() {
+            if (!cropper) { alert("Please upload an image first."); return; }
+            const canvas = cropper.getCroppedCanvas();
+            if (canvas) {
+                const previewSrc = canvas.toDataURL('image/png');
+                appData.hero.imgUrl = previewSrc;
+                saveToStorage();
+                renderPortfolio();
+                closeProfileCropper();
+                alert("Profile Photo Updated Successfully!");
+            } else {
+                alert("Please select an area to crop first.");
+            }
+        }
+
+        /* --- RENDER FUNCTIONS --- */
+        function renderPortfolio() {
+            // Hero
+            document.getElementById('hero-title').innerHTML = appData.hero.title;
+            document.getElementById('hero-desc').innerText = appData.hero.desc;
+            document.getElementById('profile-img-tag').src = appData.hero.imgUrl;
+
+            // Skills
+            const skillsContainer = document.getElementById('skills-container');
+            skillsContainer.innerHTML = '';
+            appData.skills.forEach(skill => {
+                skillsContainer.innerHTML += `
+                    <div class="skill-card">
+                        <div class="skill-icon">${skill.icon}</div>
+                        <h3>${skill.name}</h3>
+                        <p class="skill-list">${skill.items}</p>
+                    </div>`;
+            });
+
+            // Projects
+            const projectsContainer = document.getElementById('projects-container');
+            projectsContainer.innerHTML = '';
+            appData.projects.forEach(proj => {
+                const mainImg = (proj.imgs && proj.imgs.length > 0) ? proj.imgs[0] : 'https://picsum.photos/seed/default/600/400';
+                
+                projectsContainer.innerHTML += `
+                    <article class="project-card">
+                        <div class="proj-img-wrapper" onclick="openLightbox('projects', ${proj.id})">
+                            <img src="${mainImg}" alt="${proj.title}" class="proj-img-main">
+                            <div class="zoom-hint"><div class="zoom-icon">🔍</div></div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-tags">
+                                ${proj.tags.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('')}
+                            </div>
+                            <h3 class="project-title">${proj.title}</h3>
+                            <p class="project-desc">${proj.desc}</p>
+                        </div>
+                    </article>`;
+            });
+
+            // Experience
+            const expContainer = document.getElementById('experience-container');
+            expContainer.innerHTML = '';
+            if(appData.experience && appData.experience.length > 0) {
+                appData.experience.forEach(exp => {
+                    const mainImg = (exp.imgs && exp.imgs.length > 0) ? exp.imgs[0] : 'https://picsum.photos/seed/default/600/200';
+                    const hasGallery = exp.imgs && exp.imgs.length > 0;
+                    
+                    expContainer.innerHTML += `
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                ${hasGallery ? `
+                                <div class="timeline-img-container" onclick="openLightbox('experience', ${exp.id})">
+                                    <img src="${mainImg}" class="timeline-img" alt="Work">
+                                </div>` : ''}
+                                <div class="timeline-date">${exp.date}</div>
+                                <h3 class="timeline-role">${exp.role}</h3>
+                                <span class="timeline-company">${exp.company}</span>
+                            </div>
+                        </div>`;
+                });
+            }
+
+            // Contact (Dynamic Rendering)
+            const contactContainer = document.getElementById('contact-container');
+            const c = appData.contact;
+            
+            contactContainer.innerHTML = `
+                <!-- Phone Card -->
+                <div class="contact-card">
+                    <div class="contact-icon">📞</div>
+                    <h3 class="contact-title">Phone</h3>
+                    <a href="tel:${c.phone}" class="contact-link">${c.phone}</a>
+                </div>
+                <!-- Email Card -->
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3 class="contact-title">Email</h3>
+                    <a href="mailto:${c.email}" class="contact-link">${c.email}</a>
+                </div>
+                <!-- Location Card -->
+                <div class="contact-card">
+                    <div class="contact-icon">📍</div>
+                    <h3 class="contact-title">Location</h3>
+                    <p class="contact-link" style="cursor: default;">${c.location}</p>
+                </div>
+                 <!-- Socials Card -->
+                 <div class="contact-card">
+                    <div class="contact-icon">🔗</div>
+                    <h3 class="contact-title">Socials</h3>
+                    <a href="${c.linkedin}" target="_blank" class="contact-link" style="display:block; margin-bottom:5px;">LinkedIn</a>
+                    <a href="${c.github}" target="_blank" class="contact-link" style="display:block;">GitHub</a>
+                </div>
+            `;
+        }
+
+        /* --- 6. ADMIN LOGIC --- */
+        document.getElementById('admin-login-btn').addEventListener('click', function() {
+            const pass = prompt("Enter Admin Password (hint: admin):");
+            if(pass === 'admin') {
+                document.getElementById('admin-panel').style.display = 'block';
+                loadAdminData();
+            } else { alert("Access Denied"); }
+        });
+
+        function toggleAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            ['projects','experience','skills','settings'].forEach(t => {
+                document.getElementById('tab-'+t).style.display = 'none';
+            });
+            document.getElementById('tab-'+tab).style.display = 'block';
+        }
+
+        function loadAdminData() {
+            const expList = document.getElementById('admin-experience-list');
+            expList.innerHTML = '';
+            if(appData.experience && appData.experience.length > 0) {
+                appData.experience.forEach(exp => {
+                    expList.innerHTML += `<tr><td>${exp.role}</td><td>${exp.company}</td><td>${exp.date}</td><td><button class="action-btn edit-btn" onclick="editExp(${exp.id})">Edit</button><button class="action-btn delete-btn" onclick="deleteExp(${exp.id})">Delete</button></td></tr>`;
+                });
+            } else { expList.innerHTML = '<tr><td colspan="4" style="text-align:center; color: #666;">No data</td></tr>'; }
+
+            const pList = document.getElementById('admin-projects-list');
+            pList.innerHTML = '';
+            appData.projects.forEach(p => {
+                pList.innerHTML += `<tr><td>${p.title}</td><td>${p.tags}</td><td><button class="action-btn edit-btn" onclick="editProject(${p.id})">Edit</button><button class="action-btn delete-btn" onclick="deleteProject(${p.id})">Delete</button></td></tr>`;
+            });
+            
+            const sList = document.getElementById('admin-skills-list');
+            sList.innerHTML = '';
+            appData.skills.forEach((s, index) => {
+                sList.innerHTML += `<tr><td>${s.name}</td><td>${s.items}</td><td><button class="action-btn edit-btn" onclick="editSkill(${index})">Edit</button><button class="action-btn delete-btn" onclick="deleteSkill(${index})">Delete</button></td></tr>`;
+            });
+
+            // Hero Settings
+            document.getElementById('admin-hero-title').value = appData.hero.title;
+            document.getElementById('admin-hero-desc').value = appData.hero.desc;
+            document.getElementById('admin-img-url').value = appData.hero.imgUrl;
+
+            // Contact Settings
+            document.getElementById('admin-contact-phone').value = appData.contact.phone;
+            document.getElementById('admin-contact-email').value = appData.contact.email;
+            document.getElementById('admin-contact-location').value = appData.contact.location;
+            document.getElementById('admin-contact-linkedin').value = appData.contact.linkedin;
+            document.getElementById('admin-contact-github').value = appData.contact.github;
+        }
+
+        /* --- PROJECTS CRUD --- */
+        function openProjectModal(id = null) {
+            document.getElementById('modal-project').style.display = 'flex';
+            tempProjectImgs = []; 
+            if(id) {
+                const item = appData.projects.find(p => p.id === id);
+                document.getElementById('proj-id').value = item.id;
+                document.getElementById('proj-title').value = item.title;
+                document.getElementById('proj-tags').value = item.tags;
+                document.getElementById('proj-desc').value = item.desc;
+                document.getElementById('proj-modal-title').innerText = "Edit Project";
+                if(item.imgs) tempProjectImgs = [...item.imgs];
+            } else {
+                document.getElementById('proj-id').value = '';
+                document.getElementById('proj-title').value = ''; 
+                document.getElementById('proj-tags').value = '';
+                document.getElementById('proj-desc').value = ''; 
+                document.getElementById('proj-modal-title').innerText = "Add New Project";
+            }
+            renderAdminImageGrid('proj-grid', tempProjectImgs);
+        }
+
+        function editProject(id) { openProjectModal(id); }
+
+        function saveProject() {
+            const id = document.getElementById('proj-id').value;
+            const title = document.getElementById('proj-title').value;
+            const tags = document.getElementById('proj-tags').value;
+            const desc = document.getElementById('proj-desc').value;
+            if(!title || !desc) { alert("Title and Description are required"); return; }
+            const finalImgs = [...tempProjectImgs];
+            if(id) {
+                const index = appData.projects.findIndex(p => p.id == id);
+                if(index !== -1) { appData.projects[index] = { id: parseInt(id), title, tags, desc, imgs: finalImgs }; }
+            } else {
+                const newId = Date.now();
+                appData.projects.unshift({ id: newId, title, tags, desc, imgs: finalImgs });
+            }
+            saveToStorage(); closeModals(); loadAdminData(); renderPortfolio();
+        }
+
+        function deleteProject(id) {
+            if(confirm("Delete this project?")) { appData.projects = appData.projects.filter(p => p.id !== id); saveToStorage(); loadAdminData(); renderPortfolio(); }
+        }
+
+        /* --- SKILLS CRUD --- */
+        function openSkillModal(index = null) {
+            document.getElementById('modal-skill').style.display = 'flex';
+            if(index !== null) {
+                const item = appData.skills[index];
+                document.getElementById('skill-index').value = index;
+                document.getElementById('skill-name').value = item.name;
+                document.getElementById('skill-items').value = item.items;
+                document.getElementById('skill-icon').value = item.icon;
+                document.getElementById('skill-modal-title').innerText = "Edit Skill";
+            } else {
+                document.getElementById('skill-index').value = ''; document.getElementById('skill-name').value = ''; document.getElementById('skill-items').value = ''; document.getElementById('skill-icon').value = ''; document.getElementById('skill-modal-title').innerText = "Add New Skill";
+            }
+        }
+        function editSkill(index) { openSkillModal(index); }
+        function saveSkill() {
+            const index = document.getElementById('skill-index').value;
+            const name = document.getElementById('skill-name').value;
+            const items = document.getElementById('skill-items').value;
+            const icon = document.getElementById('skill-icon').value || '⚙️';
+            if(!name || !items) { alert("Please fill all fields"); return; }
+            if(index !== '') { appData.skills[index] = { name, items, icon }; } else { appData.skills.push({ name, items, icon }); }
+            saveToStorage(); closeModals(); loadAdminData(); renderPortfolio();
+        }
+        function deleteSkill(index) { if(confirm("Delete this skill?")) { appData.skills.splice(index, 1); saveToStorage(); loadAdminData(); renderPortfolio(); } }
+
+        /* --- EXPERIENCE CRUD --- */
+        function openExpModal(id = null) {
+            document.getElementById('modal-exp').style.display = 'flex';
+            tempExpImgs = [];
+            if(id) {
+                const item = appData.experience.find(e => e.id === id);
+                document.getElementById('exp-id').value = item.id;
+                document.getElementById('exp-date').value = item.date;
+                document.getElementById('exp-role').value = item.role;
+                document.getElementById('exp-company').value = item.company;
+                document.getElementById('exp-modal-title').innerText = "Edit Experience";
+                if(item.imgs) tempExpImgs = [...item.imgs];
+            } else {
+                document.getElementById('exp-id').value = ''; document.getElementById('exp-date').value = ''; document.getElementById('exp-role').value = ''; document.getElementById('exp-company').value = ''; document.getElementById('exp-modal-title').innerText = "Add Experience";
+            }
+            renderAdminImageGrid('exp-grid', tempExpImgs);
+        }
+        function editExp(id) { openExpModal(id); }
+        function saveExperience() {
+            const id = document.getElementById('exp-id').value;
+            const date = document.getElementById('exp-date').value;
+            const role = document.getElementById('exp-role').value;
+            const company = document.getElementById('exp-company').value;
+            if(!date || !role || !company) { alert("Please fill all required fields"); return; }
+            const finalImgs = [...tempExpImgs];
+            if(id) {
+                const index = appData.experience.findIndex(e => e.id == id);
+                if(index !== -1) { appData.experience[index] = { id: parseInt(id), date, role, company, imgs: finalImgs }; }
+            } else {
+                const newId = Date.now();
+                appData.experience.push({ id: newId, date, role, company, imgs: finalImgs });
+            }
+            saveToStorage(); closeModals(); loadAdminData(); renderPortfolio();
+        }
+        function deleteExp(id) { if(confirm("Delete this experience?")) { appData.experience = appData.experience.filter(e => e.id !== id); saveToStorage(); loadAdminData(); renderPortfolio(); } }
+
+        /* --- SETTINGS (UPDATED FOR CONTACT) --- */
+        function saveSettings() {
+            // Save Hero
+            appData.hero.title = document.getElementById('admin-hero-title').value;
+            appData.hero.desc = document.getElementById('admin-hero-desc').value;
+            appData.hero.imgUrl = document.getElementById('admin-img-url').value;
+
+            // Save Contact
+            appData.contact.phone = document.getElementById('admin-contact-phone').value;
+            appData.contact.email = document.getElementById('admin-contact-email').value;
+            appData.contact.location = document.getElementById('admin-contact-location').value;
+            appData.contact.linkedin = document.getElementById('admin-contact-linkedin').value;
+            appData.contact.github = document.getElementById('admin-contact-github').value;
+
+            saveToStorage(); alert("Settings Saved Successfully!"); renderPortfolio();
+        }
+
+        function closeModals() {
+            document.getElementById('modal-project').style.display = 'none';
+            document.getElementById('modal-exp').style.display = 'none';
+            document.getElementById('modal-skill').style.display = 'none';
+        }
+
+        function saveToStorage() { saveToStorageInternal(appData); }
+
+        // Initialize
+        renderPortfolio();
+
+    </script>
+</body>
+</html>
